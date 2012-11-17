@@ -49,6 +49,10 @@ class Paginate
     static public function getPaginateQuery(Query $query, $offset, $itemCountPerPage)
     {
         $ids = array_map('current', self::createLimitSubQuery($query, $offset, $itemCountPerPage)->getScalarResult());
+        
+        if (count($ids) == 0) {
+            $ids = array(0);
+        }
 
         return self::createWhereInQuery($query, $ids);
     }
