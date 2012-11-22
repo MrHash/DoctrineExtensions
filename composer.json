@@ -1,9 +1,11 @@
 {
-    "name": "beberlei/DoctrineExtensions",
+    "name": "mrhash/doctrineextensions",
     "require": {
         "doctrine/orm": "*"
     },
     "autoload": {
-        "psr-0": {"DoctrineExtensions" : "lib/"}
+        "psr-0": {
+            "DoctrineExtensions" : "lib/"
+        }
     }
 }
