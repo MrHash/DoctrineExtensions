@@ -117,11 +117,22 @@ class WhereInWalkerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(array('DoctrineExtensions\Paginate\WhereInWalker'), $whereInQuery->getHint(Query::HINT_CUSTOM_TREE_WALKERS));
         $this->assertEquals(4, $whereInQuery->getHint('id.count'));
         $this->assertEquals('pgid', $whereInQuery->getHint('pg.ns'));
-        $this->assertEquals(1, $whereInQuery->getParameter('pgid_1'));
-        $this->assertEquals(2, $whereInQuery->getParameter('pgid_2'));
-        $this->assertEquals(3, $whereInQuery->getParameter('pgid_3'));
-        $this->assertEquals(4, $whereInQuery->getParameter('pgid_4'));
+        $this->assertEquals(1, $whereInQuery->getParameter('pgid_1')->getValue());
+        $this->assertEquals(2, $whereInQuery->getParameter('pgid_2')->getValue());
+        $this->assertEquals(3, $whereInQuery->getParameter('pgid_3')->getValue());
+        $this->assertEquals(4, $whereInQuery->getParameter('pgid_4')->getValue());
     }
+    
+    /**
+     * @expectedException RuntimeException
+     */
+    public function testCreateWhereInQueryNoIDs()
+    {
+    	$query = $this->entityManager->createQuery(
+    			'SELECT u, g FROM DoctrineExtensions\Paginate\User u JOIN u.groups g WHERE 1 = 1'
+    	);
+    	$whereInQuery = Paginate::createWhereInQuery($query, array(), 'pgid');
+    }    
 
     public function setUp()
     {
