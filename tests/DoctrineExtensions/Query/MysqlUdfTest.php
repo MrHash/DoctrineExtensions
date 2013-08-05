@@ -1,7 +1,6 @@
 <?php
 
 namespace DoctrineExtensions\Query;
-
 use Doctrine\ORM\Query\Parser;
 
 class MysqlUdfTest extends \PHPUnit_Framework_TestCase
@@ -26,6 +25,7 @@ class MysqlUdfTest extends \PHPUnit_Framework_TestCase
         );
 
         $config->addCustomNumericFunction('DATEDIFF', 'DoctrineExtensions\Query\Mysql\DateDiff');
+        $config->addCustomDatetimeFunction('DATE_ADD', 'DoctrineExtensions\Query\Mysql\DateAdd');
         $config->addCustomStringFunction('STR_TO_DATE', 'DoctrineExtensions\Query\MySql\StrToDate');
         $config->addCustomStringFunction('FIND_IN_SET', 'DoctrineExtensions\Query\MySql\FindInSet');
         $this->entityManager = \Doctrine\ORM\EntityManager::create($conn, $config);
@@ -41,16 +41,36 @@ class MysqlUdfTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($sql, $q->getSql());
 
     }
-	
-	 public function testStrToDate()
+
+    public function testDateAdd()
     {
-        $dql = "SELECT p FROM Entities\BlogPost p WHERE STR_TO_DATE(p.created, :dateFormat) < :currentTime";
+        $dql = "SELECT p FROM Entities\BlogPost p WHERE DATE_ADD(CURRENT_TIME(), INTERVAL 4 MONTH) < 7";
         $q = $this->entityManager->createQuery($dql);
-		  $q->setParameter('dateFormat', '%Y-%m-%d %h:%i %p');
-		  $q->setParameter('currentTime', date('Y-m-d H:i:s'));
-			
-		  $sql = 'SELECT b0_.id AS id0, b0_.created AS created1, b0_.longitude AS longitude2, b0_.latitude AS latitude3 FROM BlogPost b0_ WHERE STR_TO_DATE(b0_.created, ?) < ?';
+
+        $sql = "SELECT b0_.id AS id0, b0_.created AS created1, b0_.longitude AS longitude2, b0_.latitude AS latitude3 FROM BlogPost b0_ WHERE DATE_ADD(CURRENT_TIME, INTERVAL 4 MONTH) < 7";
         $this->assertEquals($sql, $q->getSql());
+
+    }
+
+    public function testDateAdd2()
+    {
+        $dql = "SELECT p FROM Entities\BlogPost p WHERE DATE_ADD(CURRENT_TIME(), p.created) < 7";
+        $q = $this->entityManager->createQuery($dql);
+
+        $this->setExpectedException('Doctrine\ORM\Query\QueryException');
+
+        $q->getSql();
+
+    }
+	
+	public function testStrToDate()
+    {
+        $dql = "SELECT p FROM DoctrineExtensions\Query\BlogPost p WHERE STR_TO_DATE(p.created, :dateFormat) < :currentTime";
+        $q = $this->entityManager->createQuery($dql);
+		$q->setParameter('dateFormat', '%Y-%m-%d %h:%i %p');
+		$q->setParameter('currentTime', date('Y-m-d H:i:s'));
+			
+        var_dump($q->getSql());
     }
     
     public function testFindInSet()
@@ -58,8 +78,7 @@ class MysqlUdfTest extends \PHPUnit_Framework_TestCase
         $dql = "SELECT p FROM DoctrineExtensions\Query\BlogPost p WHERE FIND_IN_SET(p.id, p.testSet) != 0";
         $q = $this->entityManager->createQuery($dql);
 
-        $sql = 'SELECT b0_.id AS id0, b0_.testSet AS testSet1, b0_.created AS created2 FROM BlogPost b0_ WHERE FIND_IN_SET(b0_.id, b0_.testSet) <> 0';
-        $this->assertEquals($sql, $q->getSql());
+        var_dump($q->getSql());
     }
 }
 

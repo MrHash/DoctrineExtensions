@@ -3,6 +3,12 @@
 This package contains several extensions to Doctrine 2 that hook into the facilities of Doctrine and
 offer new functionality or tools to use Doctrine 2 more efficently.
 
+> Warning: This repository is not really maintained anymore. The important paginatior and large collections code was moved to the Doctrine2 core.
+> For all the other extensions, be aware that I don't maintain them anymore.
+>    
+> The user-defined functions are contributed by various persons and have not always been reviewed in their quality.
+> Please review everything you want to use.
+
 ## Including DoctrineExtensions
 
 To include the DoctrineExtensions should fire up an autoloader, for example:
@@ -54,6 +60,35 @@ $result = $query->setFirstResult($offset)->setMaxResults($limitPerPage)->getResu
 These methods internally use several others to create and retrieve the data. You can re-use
 those methods to integrate with existing pagination solutions, a `Zend_Paginator` implementation
 is already shipped (`DoctrineExtensions\Paginate\PaginationAdapter`).
+
+## Phing
+
+There are currently two Phing tasks provided by DoctrineExtensions:
+
+### GenerateProxies
+
+Generates Doctrine 2 proxy files.
+
+```xml
+<!-- assuming you have included the class file first -->
+
+<taskdef classname="DoctrineExtensions\Phing\Task\GenerateProxies" name="d2-proxies" />
+
+<d2-proxies cliConfig="${somedir}/cli-config.php" />
+```
+
+### InstallSql
+
+Generates a valid PHP file containing an array with all SQL that would be
+installed.
+
+```xml
+<!-- assuming you have included the class file first -->
+
+<taskdef classname="DoctrineExtensions\Phing\Task\InstallSql" name="d2-install-sql" />
+
+<d2-install-sql installSqlFile="${somedir}/sql/schema.sql.php" />
+```
 
 ## PHPUnit
 
