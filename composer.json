@@ -1,7 +1,7 @@
 {
     "name": "mrhash/doctrineextensions",
-    "require": {
-        "doctrine/orm": "*"
+    "suggest": {
+        "doctrine/orm": "For ORM specific features"
     },
     "autoload": {
         "psr-0": {
